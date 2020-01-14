@@ -20,7 +20,8 @@
     "mediapipe/framework/BUILD",
     "mediapipe/gpu/BUILD",
     "mediapipe/objc/BUILD",
-    "mediapipe/objc/testing/app/BUILD"
+    "mediapipe/objc/testing/app/BUILD",
+    "mediapipe/examples/facial_search/ios/BUILD"
   ],
   "buildTargets" : [
     "//mediapipe/examples/ios/facedetectioncpu:FaceDetectionCpuApp",
@@ -37,6 +38,7 @@
     "//mediapipe/examples/ios/objectdetectiontrackinggpu:ObjectDetectionTrackingGpuApp",
     "//mediapipe/examples/ios/posetrackinggpu:PoseTrackingGpuApp",
     "//mediapipe/examples/ios/selfiesegmentationgpu:SelfieSegmentationGpuApp",
+    "//mediapipe/examples/facial_search/ios:FacialSearchGpuApp",
     "//mediapipe/objc:mediapipe_framework_ios"
   ],
   "optionSet" : {
