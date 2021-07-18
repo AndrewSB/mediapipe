@@ -101,6 +101,10 @@ objc_library(
         "ObjcppLib.mm",
     ],
     hdrs = FRAMEWORK_HEADERS,
+     copts = [
+        "-Wno-shorten-64-to-32",
+        "-std=c++17",
+    ],
     data = [
         "//mediapipe/examples/facial_search/graphs:facial_search_gpu_binary",
         "//mediapipe/examples/facial_search/images:jpgs",
