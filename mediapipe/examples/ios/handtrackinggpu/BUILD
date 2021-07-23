@@ -15,6 +15,7 @@
 load(
     "@build_bazel_rules_apple//apple:ios.bzl",
     "ios_application",
+    "ios_framework",
 )
 load(
     "//mediapipe/examples/ios:bundle_id.bzl",
@@ -51,15 +52,38 @@ ios_application(
     ],
 )
 
+ios_framework(
+    name = "HyperHandTracking",
+    hdrs = [
+        "HyperHandTracking.h",
+    ],    
+    bundle_id = "com.google.mediapipe.HyperHandTracking",
+    bundle_name = "HyperHandTracking",
+    families = [
+        "iphone",
+        "ipad",
+    ],
+    infoplists = ["Info.plist"],
+    minimum_os_version = MIN_IOS_VERSION,
+    visibility = ["//visibility:public"],
+    deps = [
+        ":HandTrackingGpuAppLibrary",
+        "@ios_opencv//:OpencvFramework",
+    ],
+)
+
 objc_library(
     name = "HandTrackingGpuAppLibrary",
     srcs = [
-        "HandTrackingViewController.mm",
+        "HyperHandTracking.mm",
     ],
     hdrs = [
-        "HandTrackingViewController.h",
+        "HyperHandTracking.h",
     ],
-    copts = ["-std=c++17"],
+    copts = [
+        "-Wno-shorten-64-to-32",
+        "-std=c++17"
+    ],
     data = [
         "//mediapipe/graphs/hand_tracking:hand_tracking_mobile_gpu.binarypb",
         "//mediapipe/modules/hand_landmark:hand_landmark.tflite",
@@ -67,7 +91,9 @@ objc_library(
         "//mediapipe/modules/palm_detection:palm_detection.tflite",
     ],
     deps = [
-        "//mediapipe/examples/ios/common:CommonMediaPipeAppLibrary",
+        "//mediapipe/objc:mediapipe_framework_ios",
+        "//mediapipe/objc:mediapipe_input_sources_ios",
+        "//mediapipe/objc:mediapipe_layer_renderer",
     ] + select({
         "//mediapipe:ios_i386": [],
         "//mediapipe:ios_x86_64": [],

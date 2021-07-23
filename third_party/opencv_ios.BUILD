@@ -18,6 +18,9 @@ apple_static_framework_import(
 
 objc_library(
     name = "opencv_objc_lib",
+    copts = [
+        "-std=c++17",
+    ],
     deps = [":OpencvFramework"],
 )
 
@@ -27,7 +30,7 @@ cc_library(
         "opencv2.framework/Versions/A/Headers/**/*.h*",
     ]),
     copts = [
-        "-std=c++11",
+        "-std=c++17",
         "-x objective-c++",
     ],
     include_prefix = "opencv2",
