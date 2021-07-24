@@ -47,15 +47,33 @@ node {
   output_stream: "HAND_ROIS_FROM_PALM_DETECTIONS:hand_rects_from_palm_detections"
 }
 
+node{
+  calculator: "GpuBufferToImageFrameCalculator"
+  input_stream: "throttled_input_video"
+  output_stream: "throttled_input_video_cpu"
+}
+# node{
+#   calculator: "CanvasCalculator"
+#   input_stream: "INPUT_VIDEO:throttled_input_video_cpu"
+#   input_stream: "MY_LANDMARKS:hand_landmarks"
+#   output_stream: "OUTPUT_VIDEO:output_video_cpu"
+# }
+node: {
+  calculator: "ImageFrameToGpuBufferCalculator"
+  input_stream: "throttled_input_video_cpu"
+  output_stream: "output_video"
+}
+
+
 # Subgraph that renders annotations and overlays them on top of the input
 # images (see hand_renderer_gpu.pbtxt).
-node {
-  calculator: "HandRendererSubgraph"
-  input_stream: "IMAGE:throttled_input_video"
-  input_stream: "DETECTIONS:palm_detections"
-  input_stream: "LANDMARKS:hand_landmarks"
-  input_stream: "HANDEDNESS:handedness"
-  input_stream: "NORM_RECTS:0:hand_rects_from_palm_detections"
-  input_stream: "NORM_RECTS:1:hand_rects_from_landmarks"
-  output_stream: "IMAGE:output_video"
-}
+# node {
+#   calculator: "HandRendererSubgraph"
+#   input_stream: "IMAGE:throttled_input_video"
+#   input_stream: "DETECTIONS:palm_detections"
+#   input_stream: "LANDMARKS:hand_landmarks"
+#   input_stream: "HANDEDNESS:handedness"
+#   input_stream: "NORM_RECTS:0:hand_rects_from_palm_detections"
+#   input_stream: "NORM_RECTS:1:hand_rects_from_landmarks"
+#   output_stream: "IMAGE:output_video"
+# }
