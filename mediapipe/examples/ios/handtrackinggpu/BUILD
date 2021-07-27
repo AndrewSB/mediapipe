@@ -55,7 +55,8 @@ ios_application(
 ios_framework(
     name = "HyperHandTracking",
     hdrs = [
-        "HyperHandTracking.h",
+        #"HyperHandTracking.h",
+	"ObjcppLib.h",
     ],    
     bundle_id = "com.google.mediapipe.HyperHandTracking",
     bundle_name = "HyperHandTracking",
@@ -75,10 +76,11 @@ ios_framework(
 objc_library(
     name = "HandTrackingGpuAppLibrary",
     srcs = [
-        "HyperHandTracking.mm",
+        #"HyperHandTracking.mm",
+	"ObjcppLib.mm",
     ],
     hdrs = [
-        "HyperHandTracking.h",
+        "ObjcppLib.h",
     ],
     copts = [
         "-Wno-shorten-64-to-32",
@@ -90,6 +92,12 @@ objc_library(
         "//mediapipe/modules/hand_landmark:handedness.txt",
         "//mediapipe/modules/palm_detection:palm_detection.tflite",
     ],
+    sdk_frameworks = [
+        "AVFoundation",
+        "CoreGraphics",
+        "CoreMedia",
+        "UIKit"
+    ],
     deps = [
         "//mediapipe/objc:mediapipe_framework_ios",
         "//mediapipe/objc:mediapipe_input_sources_ios",
@@ -100,6 +108,7 @@ objc_library(
         "//conditions:default": [
             "//mediapipe/graphs/hand_tracking:mobile_calculators",
             "//mediapipe/framework/formats:landmark_cc_proto",
+"//mediapipe/framework/formats:classification_cc_proto",
         ],
     }),
 )

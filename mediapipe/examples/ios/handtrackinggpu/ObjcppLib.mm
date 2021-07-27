@@ -1,4 +1,4 @@
-#import "HyperHandTracking.h"
+#import "ObjcppLib.h"
 #import "mediapipe/objc/MPPGraph.h"
 #import "mediapipe/objc/MPPCameraInputSource.h"
 #import "mediapipe/objc/MPPLayerRenderer.h"
@@ -7,12 +7,50 @@
 
 static NSString* const kGraphName = @"hand_tracking_mobile_gpu";
 static const char* kInputStream = "input_video";
+static const char* kOutputStream = "output_video";
 static const char* kLandmarksOutputStream = "hand_landmarks";
 static const char* kNumHandsInputSidePacket = "num_hands";
+static const char* kHandednessOutputStream = "handedness";
+
+//Hands to detect/process
+static const int kNumHands = 2;
 
 @interface HyperHandTracking() <MPPGraphDelegate>
 @property(nonatomic) MPPGraph* mediapipeGraph;
 @end
+
+@interface HandLandmark()
+- (instancetype)initWithI:(uint32_t)i x:(float)x y:(float)y z:(float)z;
+@end
+
+@implementation HandLandmark
+
+- (instancetype)initWithI:(uint32_t)i x:(float)x y:(float)y z:(float)z
+{
+    self = [super init];
+    if (self) {
+        _i = i;
+        _x = x;
+        _y = y;
+        _z = z;
+    }
+    return self;
+}
+
+@end
+
+@interface HandsObservation()
+@property NSArray<HandLandmark *> *left;
+@property NSArray<HandLandmark *> *right;
+@end
+
+
+@implementation HandsObservation
+
+HandsObservation *selfReference;
+
+@end
+
 
 @implementation HyperHandTracking {}
 
@@ -48,6 +86,12 @@ static const char* kNumHandsInputSidePacket = "num_hands";
 
   // Create MediaPipe graph with mediapipe::CalculatorGraphConfig proto object.
   MPPGraph* newGraph = [[MPPGraph alloc] initWithGraphConfig:config];
+  
+  // Define the output streams to be accessed with graph
+  [newGraph setSidePacket:(mediapipe::MakePacket<int>(kNumHands)) named:kNumHandsInputSidePacket];
+  [newGraph addFrameOutputStream:kOutputStream outputPacketType:MPPPacketTypePixelBuffer];
+  [newGraph addFrameOutputStream:kLandmarksOutputStream outputPacketType:MPPPacketTypeRaw];
+  
   return newGraph;
 }
 
@@ -79,6 +123,14 @@ static const char* kNumHandsInputSidePacket = "num_hands";
 
 #pragma mark - MPPGraphDelegate methods
 
+- (void)mediapipeGraph:(MPPGraph*)graph
+  didOutputPixelBuffer:(CVPixelBufferRef)pixelBuffer
+            fromStream:(const std::string&)streamName {
+      if (streamName == kOutputStream) {
+          [_delegate recievePixelBuffer:pixelBuffer];
+      }
+}
+
 // Receives a raw packet from the MediaPipe graph. Invoked on a MediaPipe worker thread.
 - (void)mediapipeGraph:(MPPGraph*)graph
      didOutputPacket:(const ::mediapipe::Packet&)packet
@@ -96,7 +148,7 @@ static const char* kNumHandsInputSidePacket = "num_hands";
         return;
     }
 
-    HandsObservation *observation = [HandsObservation new];
+    HandsObservation *observation = [[HandsObservation alloc]init];
 
     for (int handIndex = 0; handIndex < multiHandLandmarks.size(); ++handIndex) {
         NSMutableArray<HandLandmark *> *landmarkObservations = [NSMutableArray array];
@@ -104,11 +156,10 @@ static const char* kNumHandsInputSidePacket = "num_hands";
         const auto& landmarks = multiHandLandmarks[handIndex];
         NSLog(@"\tNumber of landmarks for hand[%d]: %d", handIndex, landmarks.landmark_size());
         for (int i = 0; i < landmarks.landmark_size(); ++i) {
-            auto* l= [[HandLandmark alloc] init];
-            l.i = i;
-            l.x = landmarks.landmark(i).x();
-            l.y = landmarks.landmark(i).y();
-            l.z = landmarks.landmark(i).z();
+            auto* l= [[HandLandmark alloc]  initWithI:i
+            x:landmarks.landmark(i).x()
+            y:landmarks.landmark(i).y()
+            z:landmarks.landmark(i).z()];
             [landmarkObservations addObject:l];
         }
 
@@ -140,3 +191,7 @@ static const char* kNumHandsInputSidePacket = "num_hands";
 }
 
 @end
+
+
+
+

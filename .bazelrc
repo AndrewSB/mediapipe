@@ -8,6 +8,17 @@ build --jobs 128
 build --define='absl=1'  # for gtest
 build --enable_platform_specific_config
 
+# run_shell fix (maybe only needed for bazel 4.0?)
+build --incompatible_run_shell_command_string=false
+
+# Set python path.  Make sure to use the same python install as the pip used to instead the required modules (numpy, six)
+build --action_env=PYTHON_BIN_PATH=/usr/local/bin/python
+
+# This flag controls whether native rules will use compile info from ObjcProvider or CcInfo. If the flag is false, bazel will get its compile info from ObjcProvider (pre-migration behavior). If the flag is true, bazel will get its compile info from CcInfo (post-migration behavior).
+build --incompatible_objc_compile_info_migration=false
+
+build --incompatible_objc_provider_remove_compile_info=false
+
 # Enable stack traces
 test --test_env="GTEST_INSTALL_FAILURE_SIGNAL_HANDLER=1"
 
