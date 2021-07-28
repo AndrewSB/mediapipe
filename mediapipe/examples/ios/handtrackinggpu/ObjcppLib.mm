@@ -127,7 +127,7 @@ HandsObservation *selfReference;
   didOutputPixelBuffer:(CVPixelBufferRef)pixelBuffer
             fromStream:(const std::string&)streamName {
       if (streamName == kOutputStream) {
-          [_delegate recievePixelBuffer:pixelBuffer];
+          [_delegate handTracker: self didOutputPixelBuffer:pixelBuffer];
       }
 }
 
@@ -173,7 +173,7 @@ HandsObservation *selfReference;
         }
     }
 
-    [_delegate didReceive:observation];
+    [_delegate handTracker: self  didOutputHandsObservation:observation];
   }
 }
 
