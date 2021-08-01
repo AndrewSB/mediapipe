@@ -669,6 +669,8 @@ cc_library(
     deps = [
         "//mediapipe/framework:calculator_options_cc_proto",
         "//mediapipe/framework/formats:image_format_cc_proto",
+        "//mediapipe/framework/formats:classification_cc_proto",
+        "//mediapipe/framework/formats:hyper_out_cc_proto",
         "//mediapipe/util:color_cc_proto",
         "//mediapipe/framework/port:opencv_imgproc",
         "@com_google_absl//absl/strings",
