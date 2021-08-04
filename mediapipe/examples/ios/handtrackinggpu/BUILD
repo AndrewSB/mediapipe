@@ -108,7 +108,7 @@ objc_library(
         "//conditions:default": [
             "//mediapipe/graphs/hand_tracking:mobile_calculators",
             "//mediapipe/framework/formats:landmark_cc_proto",
-"//mediapipe/framework/formats:classification_cc_proto",
+	    "//mediapipe/framework/formats:classification_cc_proto",
         ],
     }),
 )

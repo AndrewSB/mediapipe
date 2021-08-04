@@ -21,6 +21,13 @@
 @property float z;
 @end
 
+@interface Handedness : NSObject
+@property uint32_t i;
+@property  float score;
+@property char label;
+@property char display_name;
+@end
+
 
 @interface HandsObservation : NSObject
 @property(nonatomic, readonly) NSArray<HandLandmark *> *left;
