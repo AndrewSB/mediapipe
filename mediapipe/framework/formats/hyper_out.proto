@@ -26,7 +26,11 @@ option objc_class_prefix = "MediaPipe";
 option java_package = "com.google.mediapipe.formats.proto";
 option java_outer_classname = "HyperOutProto";
   
-message HyperOutList{
+message HyperOut{
     optional NormalizedLandmarkList normalised_landmark_list = 1;
     optional ClassificationList handedness_classification_list = 2;
+  }
+  
+message HyperOutList{
+    repeated HyperOut hyper_out = 1;
 }
