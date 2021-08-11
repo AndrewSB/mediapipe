@@ -61,6 +61,25 @@ mediapipe_register_type(
 )
 
 mediapipe_proto_library(
+    name = "hyper_out_proto",
+    srcs = ["hyper_out.proto"],
+    deps = ["//mediapipe/framework/formats:classification_proto",
+            "//mediapipe/framework/formats:landmark_proto"],
+    visibility = ["//visibility:public"],
+)
+
+
+mediapipe_register_type(
+    base_name = "hyper_out",
+    include_headers = ["mediapipe/framework/formats/hyper_out.pb.h",],
+    types = [
+        "::mediapipe::HyperOutList",
+        "::std::vector<::mediapipe::HyperOutList>",
+    ],
+    deps = ["//mediapipe/framework/formats:hyper_out_cc_proto"],
+)
+
+mediapipe_proto_library(
     name = "image_format_proto",
     srcs = ["image_format.proto"],
     visibility = ["//visibility:public"],
