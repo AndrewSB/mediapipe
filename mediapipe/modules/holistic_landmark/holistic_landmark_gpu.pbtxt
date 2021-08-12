@@ -69,7 +69,7 @@ output_stream: "LEFT_HAND_LANDMARKS:left_hand_landmarks"
 # 21 right hand landmarks. (NormalizedLandmarkList)
 output_stream: "RIGHT_HAND_LANDMARKS:right_hand_landmarks"
 # 468 face landmarks. (NormalizedLandmarkList)
-output_stream: "FACE_LANDMARKS:face_landmarks"
+# output_stream: "FACE_LANDMARKS:face_landmarks"
 
 # Debug outputs
 output_stream: "POSE_ROI:pose_landmarks_roi"
@@ -96,22 +96,22 @@ node {
   output_stream: "RIGHT_HAND_LANDMARKS:right_hand_landmarks"
 }
 
-# Extracts face-related pose landmarks.
-node {
-  calculator: "SplitNormalizedLandmarkListCalculator"
-  input_stream: "pose_landmarks"
-  output_stream: "face_landmarks_from_pose"
-  options: {
-    [mediapipe.SplitVectorCalculatorOptions.ext] {
-      ranges: { begin: 0 end: 11 }
-    }
-  }
-}
+# # Extracts face-related pose landmarks.
+# node {
+#   calculator: "SplitNormalizedLandmarkListCalculator"
+#   input_stream: "pose_landmarks"
+#   output_stream: "face_landmarks_from_pose"
+#   options: {
+#     [mediapipe.SplitVectorCalculatorOptions.ext] {
+#       ranges: { begin: 0 end: 11 }
+#     }
+#   }
+# }
 
-# Predicts face landmarks based on the initial pose landmarks.
-node {
-  calculator: "FaceLandmarksFromPoseGpu"
-  input_stream: "IMAGE:image"
-  input_stream: "FACE_LANDMARKS_FROM_POSE:face_landmarks_from_pose"
-  output_stream: "FACE_LANDMARKS:face_landmarks"
-}
+# # Predicts face landmarks based on the initial pose landmarks.
+# node {
+#   calculator: "FaceLandmarksFromPoseGpu"
+#   input_stream: "IMAGE:image"
+#   input_stream: "FACE_LANDMARKS_FROM_POSE:face_landmarks_from_pose"
+#   output_stream: "FACE_LANDMARKS:face_landmarks"
+# }

@@ -249,6 +249,7 @@ mediapipe_simple_subgraph(
         "//mediapipe/calculators/core:flow_limiter_calculator",
         "//mediapipe/calculators/image:image_transformation_calculator",
         "//mediapipe/modules/pose_landmark:pose_landmark_gpu",
+        "//mediapipe/calculators/image:canvas_full_lds_calculator",
     ],
 )
 

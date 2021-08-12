@@ -81,6 +81,26 @@ mediapipe_register_type(
     deps = ["//mediapipe/framework/formats:hyper_out_cc_proto"],
 )
 
+
+mediapipe_proto_library(
+    name = "hyper_full_proto",
+    srcs = ["hyper_full.proto"],
+    deps = ["//mediapipe/framework/formats:classification_proto",
+            "//mediapipe/framework/formats:landmark_proto"],
+    visibility = ["//visibility:public"],
+)
+
+
+mediapipe_register_type(
+    base_name = "hyper_full",
+    include_headers = ["mediapipe/framework/formats/hyper_full.pb.h",],
+    types = [
+        "::mediapipe::HyperFullLandmarks",
+        "::std::vector<::mediapipe::HyperFullLandmarks>",
+    ],
+    deps = ["//mediapipe/framework/formats:hyper_full_cc_proto"],
+)
+
 mediapipe_proto_library(
     name = "image_format_proto",
     srcs = ["image_format.proto"],
