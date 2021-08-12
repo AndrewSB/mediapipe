@@ -73,6 +73,8 @@ mediapipe_register_type(
     base_name = "hyper_out",
     include_headers = ["mediapipe/framework/formats/hyper_out.pb.h",],
     types = [
+        "::mediapipe::HyperOut",
+        "::std::vector<::mediapipe::HyperOut>",
         "::mediapipe::HyperOutList",
         "::std::vector<::mediapipe::HyperOutList>",
     ],
