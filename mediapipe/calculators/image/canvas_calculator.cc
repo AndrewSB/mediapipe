@@ -43,13 +43,13 @@ REGISTER_CALCULATOR(::mediapipe::CanvasCalculator);
 }
 ::mediapipe::Status CanvasCalculator::Process(CalculatorContext* cc) {
 
-    LOG (WARNING)  << "-------------1-----------------------" << std::endl;
+    // LOG (WARNING)  << "-------------1-----------------------" << std::endl;
 
     auto landmarklist = cc->Inputs().Tag("MY_LANDMARKS").Get<std::vector<NormalizedLandmarkList>>();
-    LOG (WARNING)  << "-------------2-----------------------" << std::endl;
+    // LOG (WARNING)  << "-------------2-----------------------" << std::endl;
 
     auto handednesslist = cc->Inputs().Tag("HANDEDNESS").Get<std::vector<ClassificationList>>();
-    LOG (WARNING)  << "-------------3-----------------------" << std::endl;
+    // LOG (WARNING)  << "-------------3-----------------------" << std::endl;
 
     // for (int i = 0; i < landmarklist.size(); ++i) {
     //     const NormalizedLandmarkList& output_landmarks = landmarklist[i];
@@ -75,10 +75,10 @@ REGISTER_CALCULATOR(::mediapipe::CanvasCalculator);
 
     // HyperOutList hyper_out_ldslist;
     HyperOutList* hyper_out_ldslist = new HyperOutList();
-    LOG (WARNING)  << "-------------4-----------------------" << std::endl;
+    // LOG (WARNING)  << "-------------4-----------------------" << std::endl;
 
     hyper_out_ldslist->InitAsDefaultInstance();
-    LOG (WARNING)  << "-------------5-----------------------" << std::endl;
+    // LOG (WARNING)  << "-------------5-----------------------" << std::endl;
 
 
     // NormalizedLandmarkList output_norm_landmarks;
@@ -89,86 +89,86 @@ REGISTER_CALCULATOR(::mediapipe::CanvasCalculator);
         // HyperOut *hyper_out_ld = hyper_out_ldslist->add_hyper_out();
 
         HyperOut* hyperOut = hyper_out_ldslist->add_hyper_out();
-        LOG (WARNING)  << "-------------6-----------------------" << std::endl;
+        // LOG (WARNING)  << "-------------6-----------------------" << std::endl;
 
         const NormalizedLandmarkList &output_landmarks = landmarklist[i];
         for (int i = 0; i < output_landmarks.landmark_size(); ++i)
         {
             const NormalizedLandmark &landmark = output_landmarks.landmark(i);
-            LOG (WARNING)  << "-------------7-----------------------" << std::endl;
+            // LOG (WARNING)  << "-------------7-----------------------" << std::endl;
 
             // NormalizedLandmark *norm_landmark = output_norm_landmarks.add_landmark();
             // hyper_out_ldslist->mutable_hyper_out()->normalised_landmark_list()->add_landmark();
             hyperOut->mutable_normalised_landmark_list()->add_landmark();
             int size =  hyperOut->mutable_normalised_landmark_list()->landmark_size()-1;
-            LOG (WARNING)  << "-------------8-----------------------" << size << " " << landmark.x() << landmark.y() << landmark.z() << std::endl;
+            // LOG (WARNING)  << "-------------8-----------------------" << size << " " << landmark.x() << landmark.y() << landmark.z() << std::endl;
 
             if (landmark.has_x())
             { 
                 hyperOut->mutable_normalised_landmark_list()->mutable_landmark(size)->set_x(landmark.x());
-                LOG (WARNING)  << "-------------9-----------------------" << std::endl;
+                // LOG (WARNING)  << "-------------9-----------------------" << std::endl;
 
             }
             if (landmark.has_y())
             { 
                 hyperOut->mutable_normalised_landmark_list()->mutable_landmark(size)->set_y(landmark.y());
-                LOG (WARNING)  << "-------------10-----------------------" << std::endl;
+                // LOG (WARNING)  << "-------------10-----------------------" << std::endl;
 
             }
             if (landmark.has_z())
             { 
                 hyperOut->mutable_normalised_landmark_list()->mutable_landmark(size)->set_z(landmark.z());
-                LOG (WARNING)  << "-------------11-----------------------" << std::endl;
+                // LOG (WARNING)  << "-------------11-----------------------" << std::endl;
 
             }
             if (landmark.has_visibility())
             {   
                 hyperOut->mutable_normalised_landmark_list()->mutable_landmark(size)->set_visibility(landmark.visibility());
-                LOG (WARNING)  << "-------------12-----------------------" << std::endl;
+                // LOG (WARNING)  << "-------------12-----------------------" << std::endl;
 
             }
             if (landmark.has_presence())
             {
                 hyperOut->mutable_normalised_landmark_list()->mutable_landmark(size)->set_presence(landmark.presence());
-                LOG (WARNING)  << "-------------13-----------------------" << std::endl;
+                // LOG (WARNING)  << "-------------13-----------------------" << std::endl;
 
             }
         }
 
         const ClassificationList& handedness_clist = handednesslist[i];
-        LOG (WARNING)  << "-------------14-----------------------" << std::endl;
+        // LOG (WARNING)  << "-------------14-----------------------" << std::endl;
 
         for (int i = 0; i < handedness_clist.classification_size(); ++i) {
             
             const Classification& handedness = handedness_clist.classification(i);
-            LOG (WARNING)  << "-------------15-----------------------" << std::endl;
+            // LOG (WARNING)  << "-------------15-----------------------" << std::endl;
             hyperOut->mutable_handedness_classification_list()->add_classification();
             int size =  hyperOut->mutable_handedness_classification_list()->classification_size()-1;
-            LOG (WARNING)  << "-------------16-----------------------" << std::endl;
+            // LOG (WARNING)  << "-------------16-----------------------" << std::endl;
 
 
             // Classification *handedness_out = output_handedness_list.add_classification();
             
             if (handedness.has_label()){
                 hyperOut->mutable_handedness_classification_list()->mutable_classification(size)->set_label(handedness.label());
-                LOG (WARNING)  << "-------------17-----------------------" << std::endl;
+                // LOG (WARNING)  << "-------------17-----------------------" << std::endl;
 
             }
             if (handedness.has_index()){
                 hyperOut->mutable_handedness_classification_list()->mutable_classification(size)->set_index(handedness.index());
-                LOG (WARNING)  << "-------------18-----------------------" << std::endl;
+                // LOG (WARNING)  << "-------------18-----------------------" << std::endl;
 
             }
             if (handedness.has_score()){
                 // handedness_out->set_score(handedness.score());
                 hyperOut->mutable_handedness_classification_list()->mutable_classification(size)->set_score(handedness.score());
-                LOG (WARNING)  << "-------------19-----------------------" << std::endl;
+                // LOG (WARNING)  << "-------------19-----------------------" << std::endl;
 
             }
             if (handedness.has_display_name()){
                 // handedness_out->set_display_name(handedness.display_name());
                 hyperOut->mutable_handedness_classification_list()->mutable_classification(size)->set_display_name(handedness.display_name());
-                LOG (WARNING)  << "-------------20-----------------------" << std::endl;
+                // LOG (WARNING)  << "-------------20-----------------------" << std::endl;
 
 
             }
@@ -215,11 +215,11 @@ REGISTER_CALCULATOR(::mediapipe::CanvasCalculator);
 
 
     std::unique_ptr<mediapipe::HyperOutList> output_stream_collection = std::make_unique<mediapipe::HyperOutList>(*hyper_out_ldslist); 
-    LOG (WARNING)  << "-------------21-----------------------" << std::endl;
+    // LOG (WARNING)  << "-------------21-----------------------" << std::endl;
 
     cc->Outputs().Tag("HYPER_OUT").Add(output_stream_collection.release(), cc->InputTimestamp());
 
-    LOG (WARNING)  << "-------------22-----------------------" << std::endl;
+    // LOG (WARNING)  << "-------------22-----------------------" << std::endl;
 
 
     // cc->Outputs().Tag("HYPER_OUT").AddPacket(

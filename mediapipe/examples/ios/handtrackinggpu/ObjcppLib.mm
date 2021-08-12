@@ -5,6 +5,7 @@
 
 #include "mediapipe/framework/formats/landmark.pb.h"
 #include "mediapipe/framework/formats/classification.pb.h"
+#include "mediapipe/framework/formats/hyper_out.pb.h"
 
 static NSString* const kGraphName = @"hand_tracking_mobile_gpu";
 static const char* kInputStream = "input_video";
@@ -12,6 +13,7 @@ static const char* kOutputStream = "output_video";
 static const char* kLandmarksOutputStream = "hand_landmarks";
 static const char* kNumHandsInputSidePacket = "num_hands";
 static const char* kHandednessOutputStream = "handedness";
+static const char* kHyperLandmarksOutputStream = "hyper_landmarks";
 NSMutableArray *listOfHandedness;
 
 //Hands to detect/process
@@ -42,12 +44,12 @@ static const int kNumHands = 2;
 @end
 
 @interface Handedness()
-- (instancetype)initWithI:(uint32_t)i score:(float)score label:(char)label display_name:(char)display_name;
+- (instancetype)initWithI:(uint32_t)i score:(float)score label:(NSString *)label display_name:(NSString *)display_name;
 @end
 
 @implementation Handedness
 
-- (instancetype)initWithI:(uint32_t)i score:(float)score label:(char)label display_name:(char)display_name;
+- (instancetype)initWithI:(uint32_t)i score:(float)score label:(NSString *)label display_name:(NSString *)display_name;
 {
   self = [super init];
   if (self) {
@@ -112,8 +114,8 @@ HandsObservation *selfReference;
   // Define the output streams to be accessed with graph
   [newGraph setSidePacket:(mediapipe::MakePacket<int>(kNumHands)) named:kNumHandsInputSidePacket];
   [newGraph addFrameOutputStream:kOutputStream outputPacketType:MPPPacketTypePixelBuffer];
-  [newGraph addFrameOutputStream:kLandmarksOutputStream outputPacketType:MPPPacketTypeRaw];
-  [newGraph addFrameOutputStream:kHandednessOutputStream outputPacketType:MPPPacketTypeRaw];
+  [newGraph addFrameOutputStream:kHyperLandmarksOutputStream outputPacketType:MPPPacketTypeRaw];
+  // [newGraph addFrameOutputStream:kHandednessOutputStream outputPacketType:MPPPacketTypeRaw];
   
   
   
@@ -162,110 +164,168 @@ HandsObservation *selfReference;
           fromStream:(const std::string&)streamName {
   
   
-  if(streamName == kHandednessOutputStream){
-    if (packet.IsEmpty()) {
-      NSLog(@"[TS:%lld] No handedness", packet.Timestamp().Value());
+if(streamName == kHyperLandmarksOutputStream){
+  if (packet.IsEmpty()) {
+      // NSLog(@"[TS:%lld] No hyper landmarks", packet.Timestamp().Value());
       return;
     }
-    const auto& multiHandedness = packet.Get<std::vector<::mediapipe::ClassificationList>>();
-    
-    NSLog(@"[TS:%lld] Number of hand instances with handedness: %lu", packet.Timestamp().Value(),
-          multiHandedness.size());
-    
-    
 
-    if (!multiHandedness.size() > 0) {
+    const auto& hyperLandmarks = packet.Get<::mediapipe::HyperOutList>();
+    NSLog(@"[TS:%lld] Hands Detected : %lu", packet.Timestamp().Value(),
+          hyperLandmarks.hyper_out_size());
+
+    if (!hyperLandmarks.hyper_out_size() > 0) {
         return;
     }
-    
-    
-    listOfHandedness = [NSMutableArray array];
-    
-    for (int handIndex = 0; handIndex < multiHandedness.size(); ++handIndex) {
-      
-      NSMutableArray<Handedness *> *handednessObservations = [NSMutableArray array];
-      
-      const auto& handedness = multiHandedness[handIndex];
-//      NSLog(@"[TS:%lld] Which hand of index %lu: %lu", packet.Timestamp().Value(),handIndex,
-//            handedness.classification_size());
-      
-      for (int i = 0; i < handedness.classification_size(); ++i) {
-        
-//        auto* l= [[Handedness alloc]  initWithI:i
-//        score:handedness.classification(i).score()
-//        label:handedness.classification(i).label().c_str()
-//        display_name:handedness.classification(i).display_name().c_str()];
-//        [handednessObservations addObject:l];
-        
-        const auto& displayName=handedness.classification(i).label().c_str();
-        NSLog(@"[TS:%lld] Which hand of index %lu: %lu", packet.Timestamp().Value(),handIndex,
-              displayName);
-        
-        [listOfHandedness insertObject:[NSString stringWithUTF8String: handedness.classification(i).label().c_str()] atIndex: handIndex];
-//        NSLog(@"[TS:%lld] List of Handedness: %lu", packet.Timestamp().Value(), [listOfHandedness count]);
-        
-//        if(displayName == "right"){
-//          observation.right = listOfLandmarks[handIndex];
-//        } else if(displayName == "left") {
-//          observation.right = listOfLandmarks[handIndex];
-//        } else {
-//                      NSLog(@"Fatal: unknown hand index %d", handIndex);
-//                      return;
-//                  }
-      }
-      
-    }
-    
-    
-  }
-  
-  if (streamName == kLandmarksOutputStream) {
-    if (packet.IsEmpty()) {
-      NSLog(@"[TS:%lld] No hand landmarks", packet.Timestamp().Value());
-      return;
-    }
-    const auto& multiHandLandmarks = packet.Get<std::vector<::mediapipe::NormalizedLandmarkList>>();
-    NSLog(@"[TS:%lld] Number of hand instances with landmarks: %lu", packet.Timestamp().Value(),
-          multiHandLandmarks.size());
-
-    if (!multiHandLandmarks.size() > 0) {
-        return;
-    }
-    
-    
 
     HandsObservation *observation = [[HandsObservation alloc]init];
-    
 
-    for (int handIndex = 0; handIndex < multiHandLandmarks.size(); ++handIndex) {
-        NSMutableArray<HandLandmark *> *landmarkObservations = [NSMutableArray array];
+    for( int index = 0; index< hyperLandmarks.hyper_out_size(); ++index) {
+      
+      NSMutableArray<HandLandmark *> *landmarkObservations = [NSMutableArray array];
+      // NSMutableArray<Handedness *> *handednessObservations = [NSMutableArray array];
 
-        const auto& landmarks = multiHandLandmarks[handIndex];
-        NSLog(@"\tNumber of landmarks for hand[%d]: %d", handIndex, landmarks.landmark_size());
-      NSLog(@"\tHandedness label  for hand[%d]: %lu",handIndex, listOfHandedness[handIndex]);
-        for (int i = 0; i < landmarks.landmark_size(); ++i) {
+      const auto& handLandmarks = hyperLandmarks.hyper_out(index).normalised_landmark_list();
+      const auto& handednessData = hyperLandmarks.hyper_out(index).handedness_classification_list();
+
+      NSString* handSide = [[NSString alloc] initWithUTF8String:handednessData.classification(0).label().c_str()];
+      
+      // auto* l= [[Handedness alloc]  initWithI:0
+      //  score:handednessData.classification(0).score()
+      //  label:@(handednessData.classification(0).label().c_str())
+      //  display_name:@(handednessData.classification(0).display_name().c_str())];
+      //  NSLog(@"\tHand side : %@",  l.label);
+      //  [handednessObservations addObject:l];
+      
+      NSLog(@"[TS:%lld] Hand Index : %lu   Hand Side : %@", packet.Timestamp().Value(), index,
+          handSide);
+
+      for (int i = 0; i < handLandmarks.landmark_size(); ++i) {
             auto* l= [[HandLandmark alloc]  initWithI:i
-            x:landmarks.landmark(i).x()
-            y:landmarks.landmark(i).y()
-            z:landmarks.landmark(i).z()];
+            x:handLandmarks.landmark(i).x()
+            y:handLandmarks.landmark(i).y()
+            z:handLandmarks.landmark(i).z()];
             [landmarkObservations addObject:l];
         }
+
+      if([handSide isEqualToString:@"Right"]){
+        observation.right = landmarkObservations;
+      } else if ( [handSide isEqualToString:@"Left"]){
+        observation.left = landmarkObservations;
+      } else{
+        NSLog(@"Fatal: unknown hand side %@", handSide);
+            return;
+      }
+
+      
+    }
+    [_delegate handTracker: self  didOutputHandsObservation:observation];
+}
+
+//   if(streamName == kHandednessOutputStream){
+//     if (packet.IsEmpty()) {
+//       NSLog(@"[TS:%lld] No handedness", packet.Timestamp().Value());
+//       return;
+//     }
+//     const auto& multiHandedness = packet.Get<std::vector<::mediapipe::ClassificationList>>();
+    
+//     NSLog(@"[TS:%lld] Number of hand instances with handedness: %lu", packet.Timestamp().Value(),
+//           multiHandedness.size());
+    
+    
+
+//     if (!multiHandedness.size() > 0) {
+//         return;
+//     }
+    
+    
+//     listOfHandedness = [NSMutableArray array];
+    
+//     for (int handIndex = 0; handIndex < multiHandedness.size(); ++handIndex) {
+      
+//       NSMutableArray<Handedness *> *handednessObservations = [NSMutableArray array];
+      
+//       const auto& handedness = multiHandedness[handIndex];
+// //      NSLog(@"[TS:%lld] Which hand of index %lu: %lu", packet.Timestamp().Value(),handIndex,
+// //            handedness.classification_size());
+      
+//       for (int i = 0; i < handedness.classification_size(); ++i) {
+        
+// //        auto* l= [[Handedness alloc]  initWithI:i
+// //        score:handedness.classification(i).score()
+// //        label:handedness.classification(i).label().c_str()
+// //        display_name:handedness.classification(i).display_name().c_str()];
+// //        [handednessObservations addObject:l];
+        
+//         const auto& displayName=handedness.classification(i).label().c_str();
+//         NSLog(@"[TS:%lld] Which hand of index %lu: %lu", packet.Timestamp().Value(),handIndex,
+//               displayName);
+        
+//         [listOfHandedness insertObject:[NSString stringWithUTF8String: handedness.classification(i).label().c_str()] atIndex: handIndex];
+// //        NSLog(@"[TS:%lld] List of Handedness: %lu", packet.Timestamp().Value(), [listOfHandedness count]);
+        
+// //        if(displayName == "right"){
+// //          observation.right = listOfLandmarks[handIndex];
+// //        } else if(displayName == "left") {
+// //          observation.right = listOfLandmarks[handIndex];
+// //        } else {
+// //                      NSLog(@"Fatal: unknown hand index %d", handIndex);
+// //                      return;
+// //                  }
+//       }
+      
+//     }
+    
+    
+//   }
+  
+//   if (streamName == kLandmarksOutputStream) {
+//     if (packet.IsEmpty()) {
+//       NSLog(@"[TS:%lld] No hand landmarks", packet.Timestamp().Value());
+//       return;
+//     }
+//     const auto& multiHandLandmarks = packet.Get<std::vector<::mediapipe::NormalizedLandmarkList>>();
+//     NSLog(@"[TS:%lld] Number of hand instances with landmarks: %lu", packet.Timestamp().Value(),
+//           multiHandLandmarks.size());
+
+//     if (!multiHandLandmarks.size() > 0) {
+//         return;
+//     }
+    
+    
+
+//     HandsObservation *observation = [[HandsObservation alloc]init];
+    
+
+//     for (int handIndex = 0; handIndex < multiHandLandmarks.size(); ++handIndex) {
+//         NSMutableArray<HandLandmark *> *landmarkObservations = [NSMutableArray array];
+
+//         const auto& landmarks = multiHandLandmarks[handIndex];
+//         NSLog(@"\tNumber of landmarks for hand[%d]: %d", handIndex, landmarks.landmark_size());
+//       NSLog(@"\tHandedness label  for hand[%d]: %lu",handIndex, listOfHandedness[handIndex]);
+//         for (int i = 0; i < landmarks.landmark_size(); ++i) {
+//             auto* l= [[HandLandmark alloc]  initWithI:i
+//             x:landmarks.landmark(i).x()
+//             y:landmarks.landmark(i).y()
+//             z:landmarks.landmark(i).z()];
+//             [landmarkObservations addObject:l];
+//         }
       
      
         
-        if (listOfHandedness[handIndex] == [NSString stringWithFormat:@"%d",0]) {
-            observation.left = landmarkObservations;
-        } else if (listOfHandedness[handIndex] == [NSString stringWithFormat:@"%d",1]) {
-            observation.right = landmarkObservations;
-        } else {
-            NSLog(@"Fatal: unknown hand index %d", handIndex);
-            return;
-        }
-    }
+//         if (listOfHandedness[handIndex] == [NSString stringWithFormat:@"%d",0]) {
+//             observation.left = landmarkObservations;
+//         } else if (listOfHandedness[handIndex] == [NSString stringWithFormat:@"%d",1]) {
+//             observation.right = landmarkObservations;
+//         } else {
+//             NSLog(@"Fatal: unknown hand index %d", handIndex);
+//             return;
+//         }
+//     }
     
 
-    [_delegate handTracker: self  didOutputHandsObservation:observation];
-  }
+//     [_delegate handTracker: self  didOutputHandsObservation:observation];
+//   }
   
   
 }

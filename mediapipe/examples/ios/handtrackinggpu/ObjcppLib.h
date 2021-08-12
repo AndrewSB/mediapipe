@@ -24,8 +24,8 @@
 @interface Handedness : NSObject
 @property uint32_t i;
 @property  float score;
-@property char label;
-@property char display_name;
+@property NSString *label;
+@property NSString *display_name;
 @end
 
 
