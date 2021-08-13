@@ -141,60 +141,76 @@ if(streamName == kHyperLandmarksOutputStream){
     }
 
     const auto& hyperLandmarks = packet.Get<::mediapipe::HyperFullLandmarks>();
-    NSLog(@"[TS:%lld] Hands Detected : %lu", packet.Timestamp().Value(),
-          hyperLandmarks.pose_lds().landmark_size());
+    // NSLog(@"[TS:%lld] Hands Detected : %lu", packet.Timestamp().Value(),
+    //       hyperLandmarks.pose_lds().landmark_size());
 
-    
-    const auto& bodyLandmarks = hyperLandmarks.pose_lds();
-    const auto& leftHandLandmarks = hyperLandmarks.lhand_lds();
-    const auto& rightHandLandmarks = hyperLandmarks.rhand_lds();
-    
     HolisticObservation *observation = [[HolisticObservation alloc]init]; 
+    if(hyperLandmarks.has_pose_lds()){
+        const auto& bodyLandmarks = hyperLandmarks.pose_lds();
+
+        if(bodyLandmarks.landmark_size() >0){
+            NSLog(@"[TS:%lld] Body Points count : %lu", packet.Timestamp().Value(),
+            bodyLandmarks.landmark_size());
+            NSMutableArray<Landmarks *> *landmarkObservations = [NSMutableArray array];
+            for (int i = 0; i < bodyLandmarks.landmark_size(); ++i){
+                auto* l= [[Landmarks alloc]  initWithI:i
+                    x:bodyLandmarks.landmark(i).x()
+                    y:bodyLandmarks.landmark(i).y()
+                    z:bodyLandmarks.landmark(i).z()];
+                    [landmarkObservations addObject:l];
+            }
+
+            observation.body = landmarkObservations;
+        }
+    }
+
+    if(hyperLandmarks.has_lhand_lds()){
+        const auto& leftHandLandmarks = hyperLandmarks.lhand_lds();
+
+        if(leftHandLandmarks.landmark_size() >0){
+            NSLog(@"[TS:%lld] Left Hand Points count : %lu", packet.Timestamp().Value(),
+            leftHandLandmarks.landmark_size());
+            NSMutableArray<Landmarks *> *landmarkObservations = [NSMutableArray array];
+            for (int i = 0; i < leftHandLandmarks.landmark_size(); ++i){
+                auto* l= [[Landmarks alloc]  initWithI:i
+                    x:leftHandLandmarks.landmark(i).x()
+                    y:leftHandLandmarks.landmark(i).y()
+                    z:leftHandLandmarks.landmark(i).z()];
+                    [landmarkObservations addObject:l];
+            }
+
+            observation.left = landmarkObservations;
+        }
+
+    }
     
-    if(bodyLandmarks.landmark_size() >0){
-        NSLog(@"[TS:%lld] Body Points count : %lu", packet.Timestamp().Value(),
-          bodyLandmarks.landmark_size());
-        NSMutableArray<Landmarks *> *landmarkObservations = [NSMutableArray array];
-        for (int i = 0; i < bodyLandmarks.landmark_size(); ++i){
-            auto* l= [[Landmarks alloc]  initWithI:i
-                x:bodyLandmarks.landmark(i).x()
-                y:bodyLandmarks.landmark(i).y()
-                z:bodyLandmarks.landmark(i).z()];
-                [landmarkObservations addObject:l];
+    if(hyperLandmarks.has_rhand_lds()){
+        const auto& rightHandLandmarks = hyperLandmarks.rhand_lds();
+
+        if(rightHandLandmarks.landmark_size() >0){
+            NSLog(@"[TS:%lld] Right Hand Points count : %lu", packet.Timestamp().Value(),
+            rightHandLandmarks.landmark_size());
+            NSMutableArray<Landmarks *> *landmarkObservations = [NSMutableArray array];
+            for (int i = 0; i < rightHandLandmarks.landmark_size(); ++i){
+                auto* l= [[Landmarks alloc]  initWithI:i
+                    x:rightHandLandmarks.landmark(i).x()
+                    y:rightHandLandmarks.landmark(i).y()
+                    z:rightHandLandmarks.landmark(i).z()];
+                    [landmarkObservations addObject:l];
+            }
+
+            observation.right = landmarkObservations;
         }
-
-        observation.body = landmarkObservations;
     }
+    
+    
+    
+    [_delegate holisticTracker: self  didOutputHolisticObservation:observation];
+    
 
-    if(leftHandLandmarks.landmark_size() >0){
-        NSLog(@"[TS:%lld] Left Hand Points count : %lu", packet.Timestamp().Value(),
-          leftHandLandmarks.landmark_size());
-        NSMutableArray<Landmarks *> *landmarkObservations = [NSMutableArray array];
-        for (int i = 0; i < leftHandLandmarks.landmark_size(); ++i){
-            auto* l= [[Landmarks alloc]  initWithI:i
-                x:leftHandLandmarks.landmark(i).x()
-                y:leftHandLandmarks.landmark(i).y()
-                z:leftHandLandmarks.landmark(i).z()];
-                [landmarkObservations addObject:l];
-        }
+    
 
-        observation.left = landmarkObservations;
-    }
-
-    if(rightHandLandmarks.landmark_size() >0){
-        NSLog(@"[TS:%lld] Left Hand Points count : %lu", packet.Timestamp().Value(),
-          rightHandLandmarks.landmark_size());
-        NSMutableArray<Landmarks *> *landmarkObservations = [NSMutableArray array];
-        for (int i = 0; i < rightHandLandmarks.landmark_size(); ++i){
-            auto* l= [[Landmarks alloc]  initWithI:i
-                x:rightHandLandmarks.landmark(i).x()
-                y:rightHandLandmarks.landmark(i).y()
-                z:rightHandLandmarks.landmark(i).z()];
-                [landmarkObservations addObject:l];
-        }
-
-        observation.right = landmarkObservations;
-    }
+    
     
 }    
 }

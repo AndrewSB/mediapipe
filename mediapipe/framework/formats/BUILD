@@ -85,8 +85,7 @@ mediapipe_register_type(
 mediapipe_proto_library(
     name = "hyper_full_proto",
     srcs = ["hyper_full.proto"],
-    deps = ["//mediapipe/framework/formats:classification_proto",
-            "//mediapipe/framework/formats:landmark_proto"],
+    deps = ["//mediapipe/framework/formats:landmark_proto"],
     visibility = ["//visibility:public"],
 )
 

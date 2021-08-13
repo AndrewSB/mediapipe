@@ -11,7 +11,7 @@
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/formats/landmark.pb.h"
-// #include "mediapipe/framework/formats/classification.pb.h"adb inst   
+// #include "mediapipe/framework/formats/classification.pb.h"
 #include "mediapipe/framework/formats/hyper_full.pb.h"
 #include "mediapipe/framework/port/logging.h"
 #include <iostream>
@@ -49,9 +49,128 @@ namespace mediapipe
     ::mediapipe::Status CanvasFullLdsCalculator::Process(CalculatorContext *cc)
     {
 
-        auto poselandmarklist = cc->Inputs().Tag("POSE_LANDMARKS").Get<NormalizedLandmarkList>();
-        auto leftlandmarklist = cc->Inputs().Tag("LEFT_HAND_LANDMARKS").Get<NormalizedLandmarkList>();
-        auto rightlandmarklist = cc->Inputs().Tag("RIGHT_HAND_LANDMARKS").Get<NormalizedLandmarkList>();
+        HyperFullLandmarks *hyper_out_lds = new HyperFullLandmarks();
+        hyper_out_lds->InitAsDefaultInstance();
+
+        if (!cc->Inputs().Tag("POSE_LANDMARKS").IsEmpty())
+        {
+            auto poselandmarklist = cc->Inputs().Tag("POSE_LANDMARKS").Get<NormalizedLandmarkList>();
+
+            for (int i = 0; i < poselandmarklist.landmark_size(); ++i)
+            {
+                const NormalizedLandmark &landmark = poselandmarklist.landmark(i);
+                // LOG (WARNING)  << "-------------7-----------------------" << std::endl;
+
+                hyper_out_lds->mutable_pose_lds()->add_landmark();
+                int size = hyper_out_lds->mutable_pose_lds()->landmark_size() - 1;
+                // LOG (WARNING)  << "-------------8-----------------------" << size << " " << landmark.x() << landmark.y() << landmark.z() << std::endl;
+
+                if (landmark.has_x())
+                {
+                    hyper_out_lds->mutable_pose_lds()->mutable_landmark(size)->set_x(landmark.x());
+                    // LOG (WARNING)  << "-------------9-----------------------" << std::endl;
+                }
+                if (landmark.has_y())
+                {
+                    hyper_out_lds->mutable_pose_lds()->mutable_landmark(size)->set_y(landmark.y());
+                    // LOG (WARNING)  << "-------------10-----------------------" << std::endl;
+                }
+                if (landmark.has_z())
+                {
+                    hyper_out_lds->mutable_pose_lds()->mutable_landmark(size)->set_z(landmark.z());
+                    // LOG (WARNING)  << "-------------11-----------------------" << std::endl;
+                }
+                if (landmark.has_visibility())
+                {
+                    hyper_out_lds->mutable_pose_lds()->mutable_landmark(size)->set_visibility(landmark.visibility());
+                    // LOG (WARNING)  << "-------------12-----------------------" << std::endl;
+                }
+                if (landmark.has_presence())
+                {
+                    hyper_out_lds->mutable_pose_lds()->mutable_landmark(size)->set_presence(landmark.presence());
+                    // LOG (WARNING)  << "-------------13-----------------------" << std::endl;
+                }
+            }
+        }
+
+        if (!cc->Inputs().Tag("LEFT_HAND_LANDMARKS").IsEmpty())
+        {
+            auto leftlandmarklist = cc->Inputs().Tag("LEFT_HAND_LANDMARKS").Get<NormalizedLandmarkList>();
+            for (int i = 0; i < leftlandmarklist.landmark_size(); ++i)
+            {
+                const NormalizedLandmark &landmark = leftlandmarklist.landmark(i);
+                // LOG (WARNING)  << "-------------7-----------------------" << std::endl;
+
+                hyper_out_lds->mutable_lhand_lds()->add_landmark();
+                int size = hyper_out_lds->mutable_lhand_lds()->landmark_size() - 1;
+                // LOG (WARNING)  << "-------------8-----------------------" << size << " " << landmark.x() << landmark.y() << landmark.z() << std::endl;
+
+                if (landmark.has_x())
+                {
+                    hyper_out_lds->mutable_lhand_lds()->mutable_landmark(size)->set_x(landmark.x());
+                    // LOG (WARNING)  << "-------------9-----------------------" << std::endl;
+                }
+                if (landmark.has_y())
+                {
+                    hyper_out_lds->mutable_lhand_lds()->mutable_landmark(size)->set_y(landmark.y());
+                    // LOG (WARNING)  << "-------------10-----------------------" << std::endl;
+                }
+                if (landmark.has_z())
+                {
+                    hyper_out_lds->mutable_lhand_lds()->mutable_landmark(size)->set_z(landmark.z());
+                    // LOG (WARNING)  << "-------------11-----------------------" << std::endl;
+                }
+                if (landmark.has_visibility())
+                {
+                    hyper_out_lds->mutable_lhand_lds()->mutable_landmark(size)->set_visibility(landmark.visibility());
+                    // LOG (WARNING)  << "-------------12-----------------------" << std::endl;
+                }
+                if (landmark.has_presence())
+                {
+                    hyper_out_lds->mutable_lhand_lds()->mutable_landmark(size)->set_presence(landmark.presence());
+                    // LOG (WARNING)  << "-------------13-----------------------" << std::endl;
+                }
+            }
+        }
+
+        if (!cc->Inputs().Tag("RIGHT_HAND_LANDMARKS").IsEmpty())
+        {
+            auto rightlandmarklist = cc->Inputs().Tag("RIGHT_HAND_LANDMARKS").Get<NormalizedLandmarkList>();
+            for (int i = 0; i < rightlandmarklist.landmark_size(); ++i)
+            {
+                const NormalizedLandmark &landmark = rightlandmarklist.landmark(i);
+                // LOG (WARNING)  << "-------------7-----------------------" << std::endl;
+
+                hyper_out_lds->mutable_rhand_lds()->add_landmark();
+                int size = hyper_out_lds->mutable_rhand_lds()->landmark_size() - 1;
+
+                if (landmark.has_x())
+                {
+                    hyper_out_lds->mutable_rhand_lds()->mutable_landmark(size)->set_x(landmark.x());
+                    // LOG (WARNING)  << "-------------9-----------------------" << std::endl;
+                }
+                if (landmark.has_y())
+                {
+                    hyper_out_lds->mutable_rhand_lds()->mutable_landmark(size)->set_y(landmark.y());
+                    // LOG (WARNING)  << "-------------10-----------------------" << std::endl;
+                }
+                if (landmark.has_z())
+                {
+                    hyper_out_lds->mutable_rhand_lds()->mutable_landmark(size)->set_z(landmark.z());
+                    // LOG (WARNING)  << "-------------11-----------------------" << std::endl;
+                }
+                if (landmark.has_visibility())
+                {
+                    hyper_out_lds->mutable_rhand_lds()->mutable_landmark(size)->set_visibility(landmark.visibility());
+                    // LOG (WARNING)  << "-------------12-----------------------" << std::endl;
+                }
+                if (landmark.has_presence())
+                {
+                    hyper_out_lds->mutable_rhand_lds()->mutable_landmark(size)->set_presence(landmark.presence());
+                    // LOG (WARNING)  << "-------------13-----------------------" << std::endl;
+                }
+            }
+        }
 
         // for (int i = 0; i < poselandmarklist.landmark_size(); ++i) {
         //     const NormalizedLandmark& landmark = poselandmarklist.landmark(i);
@@ -71,120 +190,11 @@ namespace mediapipe
         //     LOG (WARNING) << landmark.x() << landmark.y() << landmark.z()  << std::endl;
         // }
 
-        HyperFullLandmarks *hyper_out_lds = new HyperFullLandmarks();
-        hyper_out_lds->InitAsDefaultInstance();
-
-        for (int i = 0; i < poselandmarklist.landmark_size(); ++i)
-        {
-            const NormalizedLandmark &landmark = poselandmarklist.landmark(i);
-            // LOG (WARNING)  << "-------------7-----------------------" << std::endl;
-
-            hyper_out_lds->mutable_pose_lds()->add_landmark();
-            int size = hyper_out_lds->mutable_pose_lds()->landmark_size() - 1;
-            // LOG (WARNING)  << "-------------8-----------------------" << size << " " << landmark.x() << landmark.y() << landmark.z() << std::endl;
-
-            if (landmark.has_x())
-            {
-                hyper_out_lds->mutable_pose_lds()->mutable_landmark(size)->set_x(landmark.x());
-                // LOG (WARNING)  << "-------------9-----------------------" << std::endl;
-            }
-            if (landmark.has_y())
-            {
-                hyper_out_lds->mutable_pose_lds()->mutable_landmark(size)->set_y(landmark.y());
-                // LOG (WARNING)  << "-------------10-----------------------" << std::endl;
-            }
-            if (landmark.has_z())
-            {
-                hyper_out_lds->mutable_pose_lds()->mutable_landmark(size)->set_z(landmark.z());
-                // LOG (WARNING)  << "-------------11-----------------------" << std::endl;
-            }
-            if (landmark.has_visibility())
-            {
-                hyper_out_lds->mutable_pose_lds()->mutable_landmark(size)->set_visibility(landmark.visibility());
-                // LOG (WARNING)  << "-------------12-----------------------" << std::endl;
-            }
-            if (landmark.has_presence())
-            {
-                hyper_out_lds->mutable_pose_lds()->mutable_landmark(size)->set_presence(landmark.presence());
-                // LOG (WARNING)  << "-------------13-----------------------" << std::endl;
-            }
-        }
-
-        for (int i = 0; i < leftlandmarklist.landmark_size(); ++i)
-        {
-            const NormalizedLandmark &landmark = leftlandmarklist.landmark(i);
-            // LOG (WARNING)  << "-------------7-----------------------" << std::endl;
-
-            hyper_out_lds->mutable_lhand_lds()->add_landmark();
-            int size = hyper_out_lds->mutable_lhand_lds()->landmark_size() - 1;
-            // LOG (WARNING)  << "-------------8-----------------------" << size << " " << landmark.x() << landmark.y() << landmark.z() << std::endl;
-
-            if (landmark.has_x())
-            {
-                hyper_out_lds->mutable_lhand_lds()->mutable_landmark(size)->set_x(landmark.x());
-                // LOG (WARNING)  << "-------------9-----------------------" << std::endl;
-            }
-            if (landmark.has_y())
-            {
-                hyper_out_lds->mutable_lhand_lds()->mutable_landmark(size)->set_y(landmark.y());
-                // LOG (WARNING)  << "-------------10-----------------------" << std::endl;
-            }
-            if (landmark.has_z())
-            {
-                hyper_out_lds->mutable_lhand_lds()->mutable_landmark(size)->set_z(landmark.z());
-                // LOG (WARNING)  << "-------------11-----------------------" << std::endl;
-            }
-            if (landmark.has_visibility())
-            {
-                hyper_out_lds->mutable_lhand_lds()->mutable_landmark(size)->set_visibility(landmark.visibility());
-                // LOG (WARNING)  << "-------------12-----------------------" << std::endl;
-            }
-            if (landmark.has_presence())
-            {
-                hyper_out_lds->mutable_lhand_lds()->mutable_landmark(size)->set_presence(landmark.presence());
-                // LOG (WARNING)  << "-------------13-----------------------" << std::endl;
-            }
-        }
-
-        for (int i = 0; i < rightlandmarklist.landmark_size(); ++i)
-        {
-            const NormalizedLandmark &landmark = rightlandmarklist.landmark(i);
-            // LOG (WARNING)  << "-------------7-----------------------" << std::endl;
-
-            hyper_out_lds->mutable_rhand_lds()->add_landmark();
-            int size = hyper_out_lds->mutable_rhand_lds()->landmark_size() - 1;
-
-            if (landmark.has_x())
-            {
-                hyper_out_lds->mutable_rhand_lds()->mutable_landmark(size)->set_x(landmark.x());
-                // LOG (WARNING)  << "-------------9-----------------------" << std::endl;
-            }
-            if (landmark.has_y())
-            {
-                hyper_out_lds->mutable_rhand_lds()->mutable_landmark(size)->set_y(landmark.y());
-                // LOG (WARNING)  << "-------------10-----------------------" << std::endl;
-            }
-            if (landmark.has_z())
-            {
-                hyper_out_lds->mutable_rhand_lds()->mutable_landmark(size)->set_z(landmark.z());
-                // LOG (WARNING)  << "-------------11-----------------------" << std::endl;
-            }
-            if (landmark.has_visibility())
-            {
-                hyper_out_lds->mutable_rhand_lds()->mutable_landmark(size)->set_visibility(landmark.visibility());
-                // LOG (WARNING)  << "-------------12-----------------------" << std::endl;
-            }
-            if (landmark.has_presence())
-            {
-                hyper_out_lds->mutable_rhand_lds()->mutable_landmark(size)->set_presence(landmark.presence());
-                // LOG (WARNING)  << "-------------13-----------------------" << std::endl;
-            }
-        }
-
         std::unique_ptr<mediapipe::HyperFullLandmarks> output_stream_collection = std::make_unique<mediapipe::HyperFullLandmarks>(*hyper_out_lds);
-        // LOG (WARNING)  << "-------------21-----------------------" << std::endl;
+        // LOG(WARNING) << "-------------21-----------------------" << std::endl;
 
         cc->Outputs().Tag("HYPER_OUT").Add(output_stream_collection.release(), cc->InputTimestamp());
+        // LOG(WARNING) << "-------------22-----------------------" << std::endl;
 
         return ::mediapipe::OkStatus();
         // after defining calculator class, we need to register it with a macro invocation

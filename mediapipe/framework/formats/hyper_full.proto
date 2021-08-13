@@ -20,7 +20,6 @@ syntax = "proto2";
 
 package mediapipe;
 import "mediapipe/framework/formats/landmark.proto";
-import "mediapipe/framework/formats/classification.proto";
 
 option objc_class_prefix = "MediaPipe";
 option java_package = "com.google.mediapipe.formats.proto";
