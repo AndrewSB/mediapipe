@@ -11,7 +11,7 @@
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/formats/landmark.pb.h"
-#include "mediapipe/framework/formats/classification.pb.h"
+// #include "mediapipe/framework/formats/classification.pb.h"adb inst   
 #include "mediapipe/framework/formats/hyper_full.pb.h"
 #include "mediapipe/framework/port/logging.h"
 #include <iostream>
@@ -50,8 +50,8 @@ namespace mediapipe
     {
 
         auto poselandmarklist = cc->Inputs().Tag("POSE_LANDMARKS").Get<NormalizedLandmarkList>();
-        auto leftlandmarklist = cc->Inputs().Tag("POSE_LANDMARKS").Get<NormalizedLandmarkList>();
-        auto rightlandmarklist = cc->Inputs().Tag("POSE_LANDMARKS").Get<NormalizedLandmarkList>();
+        auto leftlandmarklist = cc->Inputs().Tag("LEFT_HAND_LANDMARKS").Get<NormalizedLandmarkList>();
+        auto rightlandmarklist = cc->Inputs().Tag("RIGHT_HAND_LANDMARKS").Get<NormalizedLandmarkList>();
 
         // for (int i = 0; i < poselandmarklist.landmark_size(); ++i) {
         //     const NormalizedLandmark& landmark = poselandmarklist.landmark(i);
