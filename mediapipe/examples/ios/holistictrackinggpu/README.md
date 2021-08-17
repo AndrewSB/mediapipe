@@ -20,3 +20,16 @@ bazelisk build --copt=-fembed-bitcode --apple_bitcode=embedded --config=ios_arm6
 
 ## For Holistic, remember to pass CMTime timestamp in process video
 
+Example:
+
+```
+func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+          let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)
+          let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+        tracker.processVideoFrame(pixelBuffer, timestamp: timestamp)
+        
+
+      }
+```
+
+
