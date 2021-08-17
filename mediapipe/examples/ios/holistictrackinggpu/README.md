@@ -17,3 +17,6 @@ bazelisk build --copt=-fembed-bitcode --apple_bitcode=embedded --config=ios_arm6
 - Drag the framework to Frameworks, Libraries and Embedded Content
 - Embed and Sign the framework 
 - Run the app
+
+## For Holistic, remember to pass CMTime timestamp in process video
+

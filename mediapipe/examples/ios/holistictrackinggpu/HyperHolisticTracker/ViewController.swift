@@ -53,7 +53,9 @@ class ViewController: UIViewController,
       
       func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
           let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)
-          tracker.processVideoFrame(pixelBuffer)
+          let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+        tracker.processVideoFrame(pixelBuffer, timestamp: timestamp)
+        
 
       }
   
