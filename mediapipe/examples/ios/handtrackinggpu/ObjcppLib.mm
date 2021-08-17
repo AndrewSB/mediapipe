@@ -24,12 +24,12 @@ static const int kNumHands = 2;
 @end
 
 @interface HandLandmark()
-- (instancetype)initWithI:(uint32_t)i x:(float)x y:(float)y z:(float)z;
+- (instancetype)initWithI:(uint32_t)i x:(float)x y:(float)y z:(float)z visibility:(float)visibility presence:(float)presence;
 @end
 
 @implementation HandLandmark
 
-- (instancetype)initWithI:(uint32_t)i x:(float)x y:(float)y z:(float)z
+- (instancetype)initWithI:(uint32_t)i x:(float)x y:(float)y z:(float)z visibility:(float)visibility presence:(float)presence
 {
     self = [super init];
     if (self) {
@@ -37,6 +37,8 @@ static const int kNumHands = 2;
         _x = x;
         _y = y;
         _z = z;
+        _visibility = visibility;
+        _presence = presence;
     }
     return self;
 }
@@ -204,7 +206,9 @@ if(streamName == kHyperLandmarksOutputStream){
             auto* l= [[HandLandmark alloc]  initWithI:i
             x:handLandmarks.landmark(i).x()
             y:handLandmarks.landmark(i).y()
-            z:handLandmarks.landmark(i).z()];
+            z:handLandmarks.landmark(i).z()
+            visibility:handLandmarks.landmark(i).visibility()
+            presence:handLandmarks.landmark(i).presence()];
             [landmarkObservations addObject:l];
         }
 

@@ -19,12 +19,12 @@ static const char* kHyperLandmarksOutputStream = "all_landmarks";
 @end
 
 @interface Landmarks()
-- (instancetype)initWithI:(uint32_t)i x:(float)x y:(float)y z:(float)z;
+- (instancetype)initWithI:(uint32_t)i x:(float)x y:(float)y z:(float)z visibility:(float)visibility presence:(float)presence;
 @end
 
 @implementation Landmarks
 
-- (instancetype)initWithI:(uint32_t)i x:(float)x y:(float)y z:(float)z
+- (instancetype)initWithI:(uint32_t)i x:(float)x y:(float)y z:(float)z visibility:(float)visibility presence:(float)presence
 {
     self = [super init];
     if (self) {
@@ -32,6 +32,8 @@ static const char* kHyperLandmarksOutputStream = "all_landmarks";
         _x = x;
         _y = y;
         _z = z;
+        _visibility = visibility;
+        _presence = presence;
     }
     return self;
 }
@@ -156,7 +158,9 @@ if(streamName == kHyperLandmarksOutputStream){
                 auto* l= [[Landmarks alloc]  initWithI:i
                     x:bodyLandmarks.landmark(i).x()
                     y:bodyLandmarks.landmark(i).y()
-                    z:bodyLandmarks.landmark(i).z()];
+                    z:bodyLandmarks.landmark(i).z()
+                    visibility:bodyLandmarks.landmark(i).visibility()
+                    presence:bodyLandmarks.landmark(i).presence()];
                     [landmarkObservations addObject:l];
             }
 
@@ -175,7 +179,9 @@ if(streamName == kHyperLandmarksOutputStream){
                 auto* l= [[Landmarks alloc]  initWithI:i
                     x:leftHandLandmarks.landmark(i).x()
                     y:leftHandLandmarks.landmark(i).y()
-                    z:leftHandLandmarks.landmark(i).z()];
+                    z:leftHandLandmarks.landmark(i).z()
+                    visibility:leftHandLandmarks.landmark(i).visibility()
+                    presence:leftHandLandmarks.landmark(i).presence()];
                     [landmarkObservations addObject:l];
             }
 
@@ -195,7 +201,9 @@ if(streamName == kHyperLandmarksOutputStream){
                 auto* l= [[Landmarks alloc]  initWithI:i
                     x:rightHandLandmarks.landmark(i).x()
                     y:rightHandLandmarks.landmark(i).y()
-                    z:rightHandLandmarks.landmark(i).z()];
+                    z:rightHandLandmarks.landmark(i).z()
+                    visibility:rightHandLandmarks.landmark(i).visibility()
+                    presence:rightHandLandmarks.landmark(i).presence()];
                     [landmarkObservations addObject:l];
             }
 
