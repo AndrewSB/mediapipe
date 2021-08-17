@@ -85,13 +85,13 @@ HolisticObservation *selfReference;
 
   // Create MediaPipe graph with mediapipe::CalculatorGraphConfig proto object.
   MPPGraph* newGraph = [[MPPGraph alloc] initWithGraphConfig:config];
-  
+
   // Define the output streams to be accessed with graph
   [newGraph addFrameOutputStream:kOutputStream outputPacketType:MPPPacketTypePixelBuffer];
   [newGraph addFrameOutputStream:kHyperLandmarksOutputStream outputPacketType:MPPPacketTypeRaw];
-  
-  
-  
+
+
+
   return newGraph;
 }
 
@@ -116,8 +116,21 @@ HolisticObservation *selfReference;
     }
     else if (![self.mediapipeGraph waitUntilIdleWithError:&error]) {
         NSLog(@"Failed to complete graph initial run: %@", error);
-    }  
+    }
     NSLog(@"Started graph %@", kGraphName);
+}
+
+// This method is called to stop the graph.
+- (NSError* _Nullable)stopGraph {
+    NSError* error;
+    [self.mediapipeGraph cancel];
+    if (![self.mediapipeGraph closeAllInputStreamsWithError:&error]) {
+        return error;
+    }
+    if (![self.mediapipeGraph waitUntilDoneWithError:&error]) {
+        return error;
+    }
+    NSLog(@"Stopped graph %@", kGraphName);
 }
 
 #pragma mark - MPPGraphDelegate methods
@@ -144,7 +157,7 @@ if(streamName == kHyperLandmarksOutputStream){
     // NSLog(@"[TS:%lld] Hands Detected : %lu", packet.Timestamp().Value(),
     //       hyperLandmarks.pose_lds().landmark_size());
 
-    HolisticObservation *observation = [[HolisticObservation alloc]init]; 
+    HolisticObservation *observation = [[HolisticObservation alloc]init];
     if(hyperLandmarks.has_pose_lds()){
         const auto& bodyLandmarks = hyperLandmarks.pose_lds();
 
@@ -183,7 +196,7 @@ if(streamName == kHyperLandmarksOutputStream){
         }
 
     }
-    
+
     if(hyperLandmarks.has_rhand_lds()){
         const auto& rightHandLandmarks = hyperLandmarks.rhand_lds();
 
@@ -202,17 +215,17 @@ if(streamName == kHyperLandmarksOutputStream){
             observation.right = landmarkObservations;
         }
     }
-    
-    
-    
+
+
+
     [_delegate holisticTracker: self  didOutputHolisticObservation:observation];
-    
 
-    
 
-    
-    
-}    
+
+
+
+
+}
 }
 
 #pragma mark - MPPInputSourceDelegate methods
