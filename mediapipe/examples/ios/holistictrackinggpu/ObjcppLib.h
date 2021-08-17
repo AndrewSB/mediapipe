@@ -11,7 +11,7 @@
 
 @end
 
-@interface Landmarks : NSObject 
+@interface Landmarks : NSObject
 @property uint32_t i;
 @property float x;
 @property float y;
@@ -27,6 +27,7 @@
 @interface HyperHolisticTracking : NSObject
 - (instancetype)init;
 - (void)startGraph;
+- (void)stopGraph;
 - (void)processVideoFrame:(CVPixelBufferRef)imageBuffer;
 @property(weak, nonatomic) id<HyperHolisticTrackingDelegate> delegate;
 @end
