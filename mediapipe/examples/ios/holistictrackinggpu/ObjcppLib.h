@@ -1,5 +1,7 @@
 #import <CoreVideo/CoreVideo.h>
-#import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
+
+#import <UIKit/UIKit.h>
 
 @class HolisticObservation;
 @class HyperHolisticTracking;
@@ -10,6 +12,8 @@
 - (void)holisticTracker: (HyperHolisticTracking*)holisticTracker didOutputPixelBuffer: (CVPixelBufferRef)pixelBuffer;
 
 @end
+
+
 
 @interface Landmarks : NSObject 
 @property uint32_t i;
@@ -29,6 +33,8 @@
 @interface HyperHolisticTracking : NSObject
 - (instancetype)init;
 - (void)startGraph;
-- (void)processVideoFrame:(CVPixelBufferRef)imageBuffer;
+// - (void)processVideoFrame:(CVPixelBufferRef)imageBuffer;
+- (void)processVideoFrame:(CVPixelBufferRef)imageBuffer timestamp:(CMTime)timestamp;
 @property(weak, nonatomic) id<HyperHolisticTrackingDelegate> delegate;
+
 @end

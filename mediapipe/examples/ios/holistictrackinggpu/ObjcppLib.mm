@@ -2,6 +2,7 @@
 #import "mediapipe/objc/MPPGraph.h"
 #import "mediapipe/objc/MPPCameraInputSource.h"
 #import "mediapipe/objc/MPPLayerRenderer.h"
+#import "mediapipe/objc/MPPTimestampConverter.h"
 
 #include "mediapipe/framework/formats/landmark.pb.h"
 #include "mediapipe/framework/formats/hyper_full.pb.h"
@@ -12,7 +13,7 @@ static const char* kOutputStream = "output_video";
 
 
 static const char* kHyperLandmarksOutputStream = "all_landmarks";
-
+static MPPTimestampConverter* timestampConverter;
 
 @interface HyperHolisticTracking() <MPPGraphDelegate>
 @property(nonatomic) MPPGraph* mediapipeGraph;
@@ -106,12 +107,15 @@ HolisticObservation *selfReference;
         // Set maxFramesInFlight to a small value to avoid memory contention
         // for real-time processing.
         self.mediapipeGraph.maxFramesInFlight = 2;
+        
         NSLog(@"inited graph %@", kGraphName);
     }
     return self;
 }
 
 - (void)startGraph {
+
+    timestampConverter = [[MPPTimestampConverter alloc] init];
     NSError* error;
     if (![self.mediapipeGraph startWithError:&error]) {
         NSLog(@"Failed to start graph: %@", error);
@@ -151,8 +155,8 @@ if(streamName == kHyperLandmarksOutputStream){
         const auto& bodyLandmarks = hyperLandmarks.pose_lds();
 
         if(bodyLandmarks.landmark_size() >0){
-            NSLog(@"[TS:%lld] Body Points count : %lu", packet.Timestamp().Value(),
-            bodyLandmarks.landmark_size());
+            // NSLog(@"[TS:%lld] Body Points count : %lu", packet.Timestamp().Value(),
+            // bodyLandmarks.landmark_size());
             NSMutableArray<Landmarks *> *landmarkObservations = [NSMutableArray array];
             for (int i = 0; i < bodyLandmarks.landmark_size(); ++i){
                 auto* l= [[Landmarks alloc]  initWithI:i
@@ -172,8 +176,8 @@ if(streamName == kHyperLandmarksOutputStream){
         const auto& leftHandLandmarks = hyperLandmarks.lhand_lds();
 
         if(leftHandLandmarks.landmark_size() >0){
-            NSLog(@"[TS:%lld] Left Hand Points count : %lu", packet.Timestamp().Value(),
-            leftHandLandmarks.landmark_size());
+            // NSLog(@"[TS:%lld] Left Hand Points count : %lu", packet.Timestamp().Value(),
+            // leftHandLandmarks.landmark_size());
             NSMutableArray<Landmarks *> *landmarkObservations = [NSMutableArray array];
             for (int i = 0; i < leftHandLandmarks.landmark_size(); ++i){
                 auto* l= [[Landmarks alloc]  initWithI:i
@@ -194,8 +198,8 @@ if(streamName == kHyperLandmarksOutputStream){
         const auto& rightHandLandmarks = hyperLandmarks.rhand_lds();
 
         if(rightHandLandmarks.landmark_size() >0){
-            NSLog(@"[TS:%lld] Right Hand Points count : %lu", packet.Timestamp().Value(),
-            rightHandLandmarks.landmark_size());
+            // NSLog(@"[TS:%lld] Right Hand Points count : %lu", packet.Timestamp().Value(),
+            // rightHandLandmarks.landmark_size());
             NSMutableArray<Landmarks *> *landmarkObservations = [NSMutableArray array];
             for (int i = 0; i < rightHandLandmarks.landmark_size(); ++i){
                 auto* l= [[Landmarks alloc]  initWithI:i
@@ -225,13 +229,33 @@ if(streamName == kHyperLandmarksOutputStream){
 
 #pragma mark - MPPInputSourceDelegate methods
 
-- (void)processVideoFrame:(CVPixelBufferRef)imageBuffer {
-    NSLog(@"sending imageBuffer to %s", kInputStream);
-    auto sent = [self.mediapipeGraph sendPixelBuffer:imageBuffer
-                                          intoStream:kInputStream
-                                          packetType:MPPPacketTypePixelBuffer];
-    if (sent) {
-        NSLog(@"imageBuffer sent!");
+// - (void)processVideoFrame:(CVPixelBufferRef)imageBuffer {
+//     NSLog(@"sending imageBuffer to %s", kInputStream);
+//     auto sent = [self.mediapipeGraph sendPixelBuffer:imageBuffer
+//                                           intoStream:kInputStream
+//                                           packetType:MPPPacketTypePixelBuffer];
+//     if (sent) {
+//         NSLog(@"imageBuffer sent!");
+//     }
+// }
+
+- (void)processVideoFrame:(CVPixelBufferRef)imageBuffer
+                timestamp:(CMTime)timestamp{
+                    
+  // if (source != self.cameraSource && source != self.videoSource) {
+  //   NSLog(@"Unknown source: %@", source);
+  //   return;
+  // }
+//     mediapipe::Timestamp graphTimestamp(static_cast<mediapipe::TimestampBaseType>(
+// mediapipe::Timestamp::kTimestampUnitsPerSecond * CMTimeGetSeconds(timestamp)));
+
+  auto sent = [self.mediapipeGraph sendPixelBuffer:imageBuffer
+                            intoStream:kInputStream
+                            packetType:MPPPacketTypePixelBuffer
+                             timestamp:[timestampConverter timestampForMediaTime:timestamp]];
+
+                             if (sent) {
+        // NSLog(@"imageBuffer sent!");
     }
 }
 
