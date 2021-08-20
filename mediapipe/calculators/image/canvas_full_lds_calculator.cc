@@ -63,7 +63,7 @@ namespace mediapipe
 
                 hyper_out_lds->mutable_pose_lds()->add_landmark();
                 int size = hyper_out_lds->mutable_pose_lds()->landmark_size() - 1;
-                LOG (WARNING)  << "-------------POSE -----------------------" << size << " " << landmark.x() << " " << landmark.y() << " " << landmark.z() << std::endl;
+                // LOG (WARNING)  << "-------------8-----------------------" << size << " " << landmark.x() << landmark.y() << landmark.z() << std::endl;
 
                 if (landmark.has_x())
                 {
@@ -103,7 +103,7 @@ namespace mediapipe
 
                 hyper_out_lds->mutable_lhand_lds()->add_landmark();
                 int size = hyper_out_lds->mutable_lhand_lds()->landmark_size() - 1;
-                LOG (WARNING)  << "-------------LEFT -----------------------" << size << " " << landmark.x() << " " << landmark.y() << " " << landmark.z() << std::endl;
+                // LOG (WARNING)  << "-------------8-----------------------" << size << " " << landmark.x() << landmark.y() << landmark.z() << std::endl;
 
                 if (landmark.has_x())
                 {
@@ -143,8 +143,6 @@ namespace mediapipe
 
                 hyper_out_lds->mutable_rhand_lds()->add_landmark();
                 int size = hyper_out_lds->mutable_rhand_lds()->landmark_size() - 1;
-                LOG (WARNING)  << "-------------RIGHT -----------------------" << size << " " << landmark.x() << " " << landmark.y() << " " << landmark.z() << std::endl;
-
 
                 if (landmark.has_x())
                 {
@@ -193,10 +191,10 @@ namespace mediapipe
         // }
 
         std::unique_ptr<mediapipe::HyperFullLandmarks> output_stream_collection = std::make_unique<mediapipe::HyperFullLandmarks>(*hyper_out_lds);
-        LOG(WARNING) << "-------------21-----------------------" << std::endl;
+        // LOG(WARNING) << "-------------21-----------------------" << std::endl;
 
         cc->Outputs().Tag("HYPER_OUT").Add(output_stream_collection.release(), cc->InputTimestamp());
-        LOG(WARNING) << "-------------22-----------------------" << std::endl;
+        // LOG(WARNING) << "-------------22-----------------------" << std::endl;
 
         return ::mediapipe::OkStatus();
         // after defining calculator class, we need to register it with a macro invocation
