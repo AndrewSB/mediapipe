@@ -63,7 +63,7 @@ namespace mediapipe
 
                 hyper_out_lds->mutable_pose_lds()->add_landmark();
                 int size = hyper_out_lds->mutable_pose_lds()->landmark_size() - 1;
-                // LOG (WARNING)  << "-------------8-----------------------" << size << " " << landmark.x() << landmark.y() << landmark.z() << std::endl;
+                LOG (WARNING)  << "-------------POSE -----------------------" << size << " " << landmark.x() << " " << landmark.y() << " " << landmark.z() << std::endl;
 
                 if (landmark.has_x())
                 {
@@ -103,7 +103,7 @@ namespace mediapipe
 
                 hyper_out_lds->mutable_lhand_lds()->add_landmark();
                 int size = hyper_out_lds->mutable_lhand_lds()->landmark_size() - 1;
-                // LOG (WARNING)  << "-------------8-----------------------" << size << " " << landmark.x() << landmark.y() << landmark.z() << std::endl;
+                LOG (WARNING)  << "-------------LEFT -----------------------" << size << " " << landmark.x() << " " << landmark.y() << " " << landmark.z() << std::endl;
 
                 if (landmark.has_x())
                 {
@@ -143,6 +143,8 @@ namespace mediapipe
 
                 hyper_out_lds->mutable_rhand_lds()->add_landmark();
                 int size = hyper_out_lds->mutable_rhand_lds()->landmark_size() - 1;
+                LOG (WARNING)  << "-------------RIGHT -----------------------" << size << " " << landmark.x() << " " << landmark.y() << " " << landmark.z() << std::endl;
+
 
                 if (landmark.has_x())
                 {
