@@ -19,6 +19,8 @@
 @property float x;
 @property float y;
 @property float z;
+@property float visibility;
+@property float presence;
 @end
 
 @interface Handedness : NSObject

@@ -97,6 +97,8 @@
         "simd": "cpp",
         "queue": "cpp",
         "span": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "__bit_reference": "cpp",
+        "filesystem": "cpp"
     }
 }

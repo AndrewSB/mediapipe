@@ -15,6 +15,7 @@
 load(
     "@build_bazel_rules_apple//apple:ios.bzl",
     "ios_application",
+    "ios_framework",
 )
 load(
     "//mediapipe/examples/ios:bundle_id.bzl",
@@ -53,23 +54,64 @@ ios_application(
 
 objc_library(
     name = "HolisticTrackingGpuAppLibrary",
+    srcs = [
+	"ObjcppLib.mm",
+    ],
+    hdrs = [
+        "ObjcppLib.h",
+    ],
+    copts = [
+        "-Wno-shorten-64-to-32",
+        "-std=c++17"
+    ],
     data = [
         "//mediapipe/graphs/holistic_tracking:holistic_tracking_gpu.binarypb",
-        "//mediapipe/modules/face_detection:face_detection_short_range.tflite",
-        "//mediapipe/modules/face_landmark:face_landmark.tflite",
+        #"//mediapipe/modules/face_detection:face_detection_short_range.tflite",
+        #"//mediapipe/modules/face_landmark:face_landmark.tflite",
         "//mediapipe/modules/hand_landmark:hand_landmark.tflite",
         "//mediapipe/modules/hand_landmark:handedness.txt",
         "//mediapipe/modules/holistic_landmark:hand_recrop.tflite",
         "//mediapipe/modules/pose_detection:pose_detection.tflite",
         "//mediapipe/modules/pose_landmark:pose_landmark_full.tflite",
     ],
+    sdk_frameworks = [
+        "AVFoundation",
+        "CoreGraphics",
+        "CoreMedia",
+        "UIKit"
+    ],
     deps = [
-        "//mediapipe/examples/ios/common:CommonMediaPipeAppLibrary",
+        #"//mediapipe/examples/ios/common:CommonMediaPipeAppLibrary",
+        "//mediapipe/objc:mediapipe_framework_ios",
+        "//mediapipe/objc:mediapipe_input_sources_ios",
+        "//mediapipe/objc:mediapipe_layer_renderer",
     ] + select({
         "//mediapipe:ios_i386": [],
         "//mediapipe:ios_x86_64": [],
         "//conditions:default": [
             "//mediapipe/graphs/holistic_tracking:holistic_tracking_gpu_deps",
+            "//mediapipe/framework/formats:landmark_cc_proto",
+            "//mediapipe/framework/formats:hyper_full_cc_proto"
         ],
     }),
+)
+
+ios_framework(
+    name = "HyperHolisticTracking",
+    hdrs = [
+	"ObjcppLib.h",
+    ],    
+    bundle_id = "com.google.mediapipe.HyperHolisticTracking",
+    bundle_name = "HyperHolisticTracking",
+    families = [
+        "iphone",
+        "ipad",
+    ],
+    infoplists = ["Info.plist"],
+    minimum_os_version = MIN_IOS_VERSION,
+    visibility = ["//visibility:public"],
+    deps = [
+        ":HolisticTrackingGpuAppLibrary",
+        "@ios_opencv//:OpencvFramework",
+    ],
 )

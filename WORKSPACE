@@ -269,16 +269,15 @@ http_archive(
 )
 
 # You may run setup_android.sh to install Android SDK and NDK.
+# For android builds, set ANDROID_HOME (path to android sdk) and ANDROID_NDK_HOME (path to android ndk) variables in bashrc or zshrc
 android_ndk_repository(
     name = "androidndk",
-    # path = "/home/delhivery/Android/Sdk/ndk/20.1.5948944",
-    path = "/Users/jaykumarpatel/Library/Android/sdk/ndk/20.1.5948944",
+    
 )
 
 android_sdk_repository(
     name = "androidsdk",
-    # path = "/home/delhivery/Android/Sdk",
-    path = "/Users/jaykumarpatel/Library/Android/sdk",
+    
 )
 
 # iOS basic build deps.
